@@ -1,4 +1,4 @@
-﻿@model EnumModel
+﻿@model Servidor.Models.EnumModel
 
 @{
     ViewData["Title"] = "Atualização de Servidor";
@@ -14,11 +14,10 @@
 
 <form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
     <div class="w-50 my-3 m-auto">
-        <label for="StatusSelecionado" class="form-label">Município:</label>
-        @Html.DropDownListFor(m => m.StatusSelecionado,
-                 (List<SelectListItem>)ViewBag.Statuses,
-                 "-- Selecione um município --",
-                 new { @class = "form-control" })
+        <label for="StatusSelecionado" class="form-label">Status:</label>
+        <select asp-for="StatusSelecionado" class="form-select" asp-items="ViewBag.Statuses">
+            <option value="">Selecione um status</option>
+        </select>
     </div>
 
     <br /><br />
