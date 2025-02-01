@@ -11,10 +11,16 @@ namespace Servidor.Controllers
     public class ConvenioController : Controller
     {
         private readonly BancoContext _context;
+        private readonly AbareService _abareservice;
+        private readonly CupiraService _cupiraservice;
+        private readonly CansancaoService _cansancaoservice;
 
-        public ConvenioController(BancoContext context)
+        public ConvenioController(BancoContext context, AbareService abareservice, CupiraService cupiraservice, CansancaoService cansancaoservice)
         {
             _context = context;
+            _abareservice = abareservice;
+            _cupiraservice = cupiraservice;
+            _cansancaoservice = cansancaoservice;
         }
 
         public IActionResult Index()
@@ -49,110 +55,28 @@ namespace Servidor.Controllers
                 {
                     while (!reader.EndOfStream)
                     {
+
                         var linha = await reader.ReadLineAsync();
                         if (string.IsNullOrWhiteSpace(linha) || !linha.StartsWith("F", StringComparison.OrdinalIgnoreCase))
                             continue;
 
                         var colunas = linha.Split(';').Select(c => c.Trim()).ToArray();
-                        
+
                         if (status.StatusSelecionado == Status.ABARE)
                         {
-                            var contracheque = new ContrachequeModel
-                            {
-                                Ccoluna1 = colunas[7],
-                                Ccoluna2 = colunas[3],
-                                Ccoluna3 = colunas[4],
-                                Ccoluna4 = colunas[5],
-                                Ccoluna5 = "Rua A",
-                                Ccoluna6 = "S/N",
-                                Ccoluna7 = "CASA",
-                                Ccoluna8 = "CENTRO",
-                                Ccoluna9 = "ABARE",
-                                Ccoluna10 = "BA",
-                                Ccoluna11 = "99999999",
-                                Ccoluna12 = colunas[11],
-                                Ccoluna13 = colunas[12],
-                                Ccoluna14 = "99999999999",
-                                Ccoluna15 = colunas[9],
-                                Ccoluna16 = colunas[16],
-                                Ccoluna17 = "0",
-                                Ccoluna18 = colunas[18],
-                                Ccoluna19 = "0",
-                                Ccoluna20 = "Teste@gmail.com",
-                                Ccoluna21 = colunas[19],
-                                Ccoluna22 = "0",
-                                Ccoluna23 = colunas[10],
-                                Ccoluna24 = "0",
-                                Ccoluna25 = "0"
-                            };
-                            if (colunas[16].Trim().Equals("Cargo Comissionado", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "7";
-                            }
-                            if (colunas[16].Trim().Equals("Cargo Efetivo", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "2";
-                            }
-                            if (colunas[16].Trim().Equals("SERVIDOR EFETIVO CEDIDO DE OUTRA ENTIDADE", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "33";
-                            }
-                            if (colunas[16].Trim().Equals("EFETIVO CEDIDO LAGOA DOS GATOS", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "33";
-                            }
-                            if (colunas[16].Trim().Equals("ELETIVOS", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "13";
-                            }
-                            if (colunas[16].Trim().Equals("Contratados", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "5";
-                            }
-                            if (colunas[16].Trim().Equals("PENSIONISTA", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "1";
-                            }
-                            if (colunas[16].Trim().Equals("INATIVOS", StringComparison.OrdinalIgnoreCase))
-                            {
-                                contracheque.Ccoluna16 = "14";
-                            }
-
-                            registros.Add(contracheque);
+                            var contracheques = await _abareservice.ProcessarArquivoAsync(colunas, Status.ABARE);
+                            registros.AddRange(contracheques);
                         }
                         if (status.StatusSelecionado == Status.CUPIRA)
                         {
-                            var contracheque = new ContrachequeModel
-                            {
-                                Ccoluna1 = colunas[7],
-                                Ccoluna2 = colunas[3],
-                                Ccoluna3 = colunas[4],
-                                Ccoluna4 = colunas[5],
-                                Ccoluna5 = "Rua A",
-                                Ccoluna6 = "S/N",
-                                Ccoluna7 = "CASA",
-                                Ccoluna8 = "CENTRO",
-                                Ccoluna9 = "CUPIRA",
-                                Ccoluna10 = "AL",
-                                Ccoluna11 = "99999999",
-                                Ccoluna12 = colunas[11],
-                                Ccoluna13 = colunas[12],
-                                Ccoluna14 = "99999999999",
-                                Ccoluna15 = colunas[9],
-                                Ccoluna16 = colunas[16],
-                                Ccoluna17 = "0",
-                                Ccoluna18 = colunas[18],
-                                Ccoluna19 = "0",
-                                Ccoluna20 = "Teste@gmail.com",
-                                Ccoluna21 = colunas[19],
-                                Ccoluna22 = "0",
-                                Ccoluna23 = colunas[10],
-                                Ccoluna24 = "0",
-                                Ccoluna25 = "0"
-                            };
-                            registros.Add(contracheque);
+                            var contracheques = await _cupiraservice.ProcessarArquivoAsync(colunas, Status.CUPIRA);
+                            registros.AddRange(contracheques);
                         }
-
+                        if (status.StatusSelecionado == Status.CANSANCAO)
+                        {
+                            var contracheques = await _cansancaoservice.ProcessarArquivoAsync(colunas, Status.CANSANCAO);
+                            registros.AddRange(contracheques);
+                        }
                     }
                 }
 
@@ -193,37 +117,30 @@ namespace Servidor.Controllers
                             Acoluna5 = row.GetCell(13)?.ToString() ?? "", // Coluna 14
                             Acoluna6 = row.GetCell(14)?.ToString() ?? "", // Coluna 15
                         };
-                        if (administrativo.Acoluna5 == "Contratado")
+
+                        // Mapeamento de valores para Acoluna5
+                        var Vinculo = new Dictionary<string, string>
                         {
-                            administrativo.Acoluna5 = "5";
-                        }
-                        if (administrativo.Acoluna5 == "Comissionado")
+                            { "Contratado", "5" },
+                            { "Comissionado", "7" },
+                            { "Agente politico", "13" },
+                            { "Efetivo", "2" },
+                            { "Inativo", "14" },
+                            { "Pensionista", "1" },
+                            { "Cedido", "33" },
+                            { "Eletivo", "13" },
+                            { "Temporário", "11"},
+                            { "Aguardando Especificar", "14" },
+                            { "Conselheiro Tutelar", "17"},
+                            { "Estatutário", "10"},
+                            { "Militar", "14"},
+                            { "Celetista", "9"}
+                        };                      
+
+                        // Atualiza Acoluna5 com base no mapeamento
+                        if (Vinculo.ContainsKey(administrativo.Acoluna5))
                         {
-                            administrativo.Acoluna5 = "7";
-                        }
-                        if (administrativo.Acoluna5 == "Agente politico")
-                        {
-                            administrativo.Acoluna5 = "13";
-                        }
-                        if (administrativo.Acoluna5 == "Efetivo")
-                        {
-                            administrativo.Acoluna5 = "2";
-                        }
-                        if (administrativo.Acoluna5 == "Inativo")
-                        {
-                            administrativo.Acoluna5 = "14";
-                        }
-                        if (administrativo.Acoluna5 == "Pensionista")
-                        {
-                            administrativo.Acoluna5 = "1";
-                        }
-                        if (administrativo.Acoluna5 == "Cedido")
-                        {
-                            administrativo.Acoluna5 = "33";
-                        }
-                        if (administrativo.Acoluna5 == "Eletivo")
-                        {
-                            administrativo.Acoluna5 = "13";
+                            administrativo.Acoluna5 = Vinculo[administrativo.Acoluna5];
                         }
                         registros2.Add(administrativo);
                     }

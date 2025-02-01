@@ -5,8 +5,6 @@ namespace Servidor.Models
 {
     public class EnumModel
     {
-        public Status StatusSelecionado { get; set; }
-        public string Ccoluna9 { get; set; }
-        public string Ccoluna10 { get; set; }
+        public Status StatusSelecionado { get; set; }   
     }
 }

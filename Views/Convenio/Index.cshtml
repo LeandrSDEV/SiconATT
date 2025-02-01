@@ -14,7 +14,7 @@
 
 <form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
     <div class="w-50 my-3 m-auto">
-        <label for="StatusSelecionado" class="form-label">Status:</label>
+        <label for="StatusSelecionado" class="form-label">Município:</label>
         <select asp-for="StatusSelecionado" class="form-select" asp-items="ViewBag.Statuses">
             <option value="">Selecione um status</option>
         </select>

@@ -9,6 +9,11 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BancoContext>(x
         => x.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(3, 0, 38))));
 
+builder.Services.AddScoped<AbareService>();
+builder.Services.AddScoped<CupiraService>();
+builder.Services.AddScoped<CansancaoService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
