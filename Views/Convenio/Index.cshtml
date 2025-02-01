@@ -1,0 +1,45 @@
+﻿@model EnumModel
+
+@{
+    ViewData["Title"] = "Atualização de Servidor";
+}
+
+<br />
+<br />
+
+<h3 class="display-3 my-3 text-center">ATUALIZAÇÃO DE SERVIDOR</h3>
+
+<br />
+<br />
+
+<form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
+    <div class="w-50 my-3 m-auto">
+        <label for="StatusSelecionado" class="form-label">Município:</label>
+        @Html.DropDownListFor(m => m.StatusSelecionado,
+                 (List<SelectListItem>)ViewBag.Statuses,
+                 "-- Selecione um município --",
+                 new { @class = "form-control" })
+    </div>
+
+    <br /><br />
+
+    <div class="d-flex justify-content-between">
+        <div class="txtcss">
+            <label for="arquivoTxt" class="form-label">Arquivo Contracheque:</label>
+            <input type="file" id="arquivoTxt" name="arquivoTxt" accept=".txt" class="form-control" />
+            <span id="uploadStatus" class="text-success"></span>
+        </div>
+
+        <div class="excelcss">
+            <label for="arquivoExcel" class="form-label">Arquivo Administrador:</label>
+            <input type="file" id="arquivoExcel" name="arquivoExcel" accept=".xlsx" class="form-control" />
+            <span id="uploadStatus" class="text-success"></span>
+        </div>
+    </div>
+
+    <br /><br />
+
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary w-25">Atualizar</button>
+    </div>
+</form>
