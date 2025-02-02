@@ -28,7 +28,7 @@ public class CupiraService
             Ccoluna7 = "CASA",
             Ccoluna8 = "CENTRO",
             Ccoluna9 = "CUPIRA",
-            Ccoluna10 = "AL",
+            Ccoluna10 = "PE",
             Ccoluna11 = "99999999",
             Ccoluna12 = "0",
             Ccoluna13 = "0",
@@ -48,10 +48,9 @@ public class CupiraService
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CUPIRA")
         {
-            contracheque.Ccoluna19 = "1";
+            contracheque.Ccoluna21 = "1";
         }
 
-        // Verifica e atualiza Ccoluna16 com base no mapeamento
         if (Vinculo.ContainsKey(colunas[16].Trim()))
         {
             contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
@@ -64,14 +63,14 @@ public class CupiraService
             case "5":
             case "14":
             case "1":
-                contracheque.Ccoluna17 = "943";
+                contracheque.Ccoluna18 = "943";
                 break;
             case "33":
             case "2":
-                contracheque.Ccoluna17 = "926";
+                contracheque.Ccoluna18 = "926";
                 break;
             default:
-                contracheque.Ccoluna17 = "ERRO";
+                contracheque.Ccoluna18 = "ERRO";
                 break;
         }
 

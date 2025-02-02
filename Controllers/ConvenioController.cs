@@ -14,13 +14,22 @@ namespace Servidor.Controllers
         private readonly AbareService _abareservice;
         private readonly CupiraService _cupiraservice;
         private readonly CansancaoService _cansancaoservice;
+        private readonly MatriculaService _matriculaservice;
+        private readonly SecretariaService _secretariaservice;
+        private readonly NaoEncontradoService _naoEncontradoService;
 
-        public ConvenioController(BancoContext context, AbareService abareservice, CupiraService cupiraservice, CansancaoService cansancaoservice)
+        public ConvenioController(BancoContext context, AbareService abareservice, 
+                                  CupiraService cupiraservice, CansancaoService cansancaoservice, 
+                                  MatriculaService matriculaservice, SecretariaService secretariaservice,
+                                  NaoEncontradoService naoEncontradoService)
         {
             _context = context;
             _abareservice = abareservice;
             _cupiraservice = cupiraservice;
             _cansancaoservice = cansancaoservice;
+            _matriculaservice = matriculaservice;
+            _secretariaservice = secretariaservice;
+            _naoEncontradoService = naoEncontradoService;
         }
 
         public IActionResult Index()
@@ -161,6 +170,10 @@ namespace Servidor.Controllers
             {
                 TempData["Mensagem"] = $"Erro ao processar o arquivo Excel: {ex.Message}";
             }
+
+            await _matriculaservice.GerarMatriculasAsync();
+            await _secretariaservice.GerarSecretariasAsync();
+            await _secretariaservice.GerarSecretariasAsync();
 
             return RedirectToAction("Index");
         }
