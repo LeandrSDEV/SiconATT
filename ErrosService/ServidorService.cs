@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using Servidor.Data;
 using Microsoft.EntityFrameworkCore;
 
-public class NaoEncontradoService
+public class ServidorService
 {
     private readonly BancoContext _context;
 
-    public NaoEncontradoService(BancoContext context)
+    public ServidorService(BancoContext context)
     {
         _context = context;
     }
@@ -33,7 +33,7 @@ public class NaoEncontradoService
 
         // Gerar o arquivo TXT com as discrepâncias
         var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var filePath = Path.Combine(desktopPath, "NaoEncontrado.txt");
+        var filePath = Path.Combine(desktopPath, "SERVIDOR.txt");
 
         // Usando StreamWriter assíncrono
         await using (var writer = new StreamWriter(filePath))

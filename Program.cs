@@ -14,7 +14,9 @@ builder.Services.AddScoped<CupiraService>();
 builder.Services.AddScoped<CansancaoService>();
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();
-builder.Services.AddScoped<NaoEncontradoService>();
+builder.Services.AddScoped<ServidorService>();
+builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<CleanupService>();
 
 
 var app = builder.Build();

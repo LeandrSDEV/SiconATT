@@ -7,7 +7,7 @@ public class AbareService
     {
         { "Efetivo", "2" },
         { "Conselho Tutelar", "17" },
-        { "Processo Seletivo", "5" },
+        { "Processo Seletivo", "11" },
         { "Trabalhador Temporário", "11" },
         { "Cargo em Comissão", "7" },
         { "Agente Político", "13" }
@@ -44,10 +44,32 @@ public class AbareService
             Ccoluna25 = "0"
         };
 
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE ABARE")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+
         // Verifica e atualiza Ccoluna16 com base no mapeamento
         if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
         {
             contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "7":
+            case "13":
+            case "5":
+            case "17":
+            case "11":
+                contracheque.Ccoluna18 = "679";
+                break;
+            case "2":
+                contracheque.Ccoluna18 = "678";
+                break;
+            default:
+                contracheque.Ccoluna18 = "ERRO";
+                break;
         }
 
         return Task.FromResult(new List<ContrachequeModel> { contracheque });

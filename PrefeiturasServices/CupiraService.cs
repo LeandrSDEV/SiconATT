@@ -12,7 +12,7 @@ public class CupiraService
         { "ELETIVOS", "13" },
         { "Contratados", "5" },
         { "PENSIONISTA", "1" },
-        { "INATIVOS", "14" }
+        { "INATIVOS", "28" }
     };
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
@@ -61,7 +61,7 @@ public class CupiraService
             case "7":
             case "13":
             case "5":
-            case "14":
+            case "28":
             case "1":
                 contracheque.Ccoluna18 = "943";
                 break;

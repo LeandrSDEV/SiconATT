@@ -16,12 +16,13 @@ namespace Servidor.Controllers
         private readonly CansancaoService _cansancaoservice;
         private readonly MatriculaService _matriculaservice;
         private readonly SecretariaService _secretariaservice;
-        private readonly NaoEncontradoService _naoEncontradoService;
+        private readonly ServidorService _servidorService;
+        private readonly CategoriaService _categoriaService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice, 
                                   MatriculaService matriculaservice, SecretariaService secretariaservice,
-                                  NaoEncontradoService naoEncontradoService)
+                                  ServidorService servidorService, CategoriaService categoriaService)
         {
             _context = context;
             _abareservice = abareservice;
@@ -29,7 +30,8 @@ namespace Servidor.Controllers
             _cansancaoservice = cansancaoservice;
             _matriculaservice = matriculaservice;
             _secretariaservice = secretariaservice;
-            _naoEncontradoService = naoEncontradoService;
+            _servidorService = servidorService;
+            _categoriaService = categoriaService;
         }
 
         public IActionResult Index()
@@ -127,7 +129,7 @@ namespace Servidor.Controllers
                             Acoluna6 = row.GetCell(14)?.ToString() ?? "", // Coluna 15
                         };
 
-                        // Mapeamento de valores para Acoluna5
+                         //Mapeamento de valores para Acoluna5
                         var Vinculo = new Dictionary<string, string>
                         {
                             { "Contratado", "5" },
@@ -146,7 +148,7 @@ namespace Servidor.Controllers
                             { "Celetista", "9"}
                         };                      
 
-                        // Atualiza Acoluna5 com base no mapeamento
+                         //Atualiza Acoluna5 com base no mapeamento
                         if (Vinculo.ContainsKey(administrativo.Acoluna5))
                         {
                             administrativo.Acoluna5 = Vinculo[administrativo.Acoluna5];
@@ -172,8 +174,9 @@ namespace Servidor.Controllers
             }
 
             await _matriculaservice.GerarMatriculasAsync();
+            await _servidorService.GerarEncontradoAsync();
             await _secretariaservice.GerarSecretariasAsync();
-            await _secretariaservice.GerarSecretariasAsync();
+            await _categoriaService.GerarVinculoAsync();
 
             return RedirectToAction("Index");
         }
