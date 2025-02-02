@@ -18,11 +18,13 @@ namespace Servidor.Controllers
         private readonly SecretariaService _secretariaservice;
         private readonly ServidorService _servidorService;
         private readonly CategoriaService _categoriaService;
+        private readonly CleanupService _cleanupService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice, 
                                   MatriculaService matriculaservice, SecretariaService secretariaservice,
-                                  ServidorService servidorService, CategoriaService categoriaService)
+                                  ServidorService servidorService, CategoriaService categoriaService,
+                                  CleanupService cleanupService)
         {
             _context = context;
             _abareservice = abareservice;
@@ -32,6 +34,7 @@ namespace Servidor.Controllers
             _secretariaservice = secretariaservice;
             _servidorService = servidorService;
             _categoriaService = categoriaService;
+            _cleanupService = cleanupService;
         }
 
         public IActionResult Index()
@@ -177,6 +180,8 @@ namespace Servidor.Controllers
             await _servidorService.GerarEncontradoAsync();
             await _secretariaservice.GerarSecretariasAsync();
             await _categoriaService.GerarVinculoAsync();
+
+            await _cleanupService.LimparTabelasAsync();
 
             return RedirectToAction("Index");
         }

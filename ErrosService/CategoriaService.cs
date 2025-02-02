@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
+using System.Linq;
 
 public class CategoriaService
 {
@@ -36,20 +37,36 @@ public class CategoriaService
             )
             .ToList();
 
-        // Gerar o arquivo TXT com as discrepâncias
-        var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var filePath = Path.Combine(desktopPath, "CATEGORIA.txt");
-
-        // Usando StreamWriter assíncrono para escrever no arquivo
-        using (var writer = new StreamWriter(filePath))
+        // Verificar se há discrepâncias antes de gerar o arquivo
+        if (discrepancias.Any())
         {
-            foreach (var item in discrepancias)
-            {
-                // Salvando os valores de Ccoluna2, Ccoluna3 e Ccoluna16 das discrepâncias no arquivo
-                await writer.WriteLineAsync($"{item.Ccoluna2};{item.Ccoluna3};{item.Ccoluna16}");
-            }
-        }
+            // Agrupar discrepâncias por Ccoluna2
+            var discrepanciasAgrupadas = discrepancias
+                .GroupBy(d => d.Ccoluna2)
+                .ToList();
 
-        Console.WriteLine($"Arquivo salvo em: {filePath}");
+            // Gerar o arquivo TXT com as discrepâncias
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var filePath = Path.Combine(desktopPath, "CATEGORIA.txt");
+
+            // Usando StreamWriter assíncrono para escrever no arquivo
+            using (var writer = new StreamWriter(filePath))
+            {
+                foreach (var grupo in discrepanciasAgrupadas)
+                {
+                    foreach (var item in grupo)
+                    {
+                        // Escrever cada linha com valores únicos de Ccoluna3
+                        await writer.WriteLineAsync($"{item.Ccoluna2};{item.Ccoluna3};{item.Ccoluna16}");
+                    }
+                }
+            }
+
+            Console.WriteLine($"Arquivo salvo em: {filePath}");
+        }
+        else
+        {
+            Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não gerado.");
+        }
     }
 }
