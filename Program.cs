@@ -12,10 +12,14 @@ builder.Services.AddDbContext<BancoContext>(x
 builder.Services.AddScoped<AbareService>();
 builder.Services.AddScoped<CupiraService>();
 builder.Services.AddScoped<CansancaoService>();
+builder.Services.AddScoped<XiqueXiqueService>();
+builder.Services.AddScoped<AlcinopolisService>();
+
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();
 builder.Services.AddScoped<ServidorService>();
 builder.Services.AddScoped<CategoriaService>();
+
 builder.Services.AddScoped<CleanupService>();
 
 

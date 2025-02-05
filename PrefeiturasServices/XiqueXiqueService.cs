@@ -1,14 +1,15 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
 
-public class CansancaoService
+public class XiqueXiqueService
 {
-    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    private static readonly Dictionary<string, string> Vinculo = new()
     {
-       { "Estatutário", "10" },
+        { "Estatutário", "10" },
         { "Agente Político", "13" },
-        { "Trabalhador Temporário", "11" },
+        { "Cedidos", "33" },
         { "Cargo em Comissão", "7" },
+        { "TRABALHADOR TEMPORÁRIO", "11" },
         { "Conselho Tutelar", "17" }
     };
 
@@ -24,7 +25,7 @@ public class CansancaoService
             Ccoluna6 = "S/N",
             Ccoluna7 = "CASA",
             Ccoluna8 = "CENTRO",
-            Ccoluna9 = "CANSANCAO",
+            Ccoluna9 = "XIQUEXIQUE",
             Ccoluna10 = "BA",
             Ccoluna11 = "99999999",
             Ccoluna12 = "0",
@@ -43,32 +44,31 @@ public class CansancaoService
             Ccoluna25 = "0"
         };
 
-        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CANSANCAO")
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE XIQUE XIQUE")
         {
-            contracheque.Ccoluna19 = "1";
+            contracheque.Ccoluna21 = "1";
         }
 
-        // Verifica e atualiza Ccoluna16 com base no mapeamento
-        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
         {
-            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
         }
 
         switch (contracheque.Ccoluna16)
-        {
-            case "11":
-            case "13":
-            case "7":
-            case "17":
-            contracheque.Ccoluna18 = "833";
-                break;
+        {           
             case "10":
-                contracheque.Ccoluna18 = "128";
-                break;
+            case "13":
+            case "33":
+            case "7":
+            case "11":
+            case "17":
+                contracheque.Ccoluna18 = "265";
+                break;         
             default:
                 contracheque.Ccoluna18 = "ERRO";
                 break;
         }
+
 
         return Task.FromResult(new List<ContrachequeModel> { contracheque });
     }

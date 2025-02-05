@@ -1,15 +1,17 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
 
-public class CansancaoService
+public class AlcinopolisService
 {
-    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    private static readonly Dictionary<string, string> Vinculo = new()
     {
-       { "Estatutário", "10" },
-        { "Agente Político", "13" },
-        { "Trabalhador Temporário", "11" },
-        { "Cargo em Comissão", "7" },
-        { "Conselho Tutelar", "17" }
+        { "Comissionado", "7" },
+        { "Concursado", "2" },
+        { "Tempo determinado/Processo seletivo simplificado", "5" },
+        { "Prefeito", "13" },
+        { "Vice-Prefeito", "13" },
+        { "Conselho tutelar", "17" },
+        { "Membro de Conselho", "17" }
     };
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
@@ -24,8 +26,8 @@ public class CansancaoService
             Ccoluna6 = "S/N",
             Ccoluna7 = "CASA",
             Ccoluna8 = "CENTRO",
-            Ccoluna9 = "CANSANCAO",
-            Ccoluna10 = "BA",
+            Ccoluna9 = "ALCINOPOLIS",
+            Ccoluna10 = "MS",
             Ccoluna11 = "99999999",
             Ccoluna12 = "0",
             Ccoluna13 = "0",
@@ -43,32 +45,35 @@ public class CansancaoService
             Ccoluna25 = "0"
         };
 
-        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CANSANCAO")
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE ALCINOPOLIS")
         {
-            contracheque.Ccoluna19 = "1";
+            contracheque.Ccoluna21 = "1";
         }
 
-        // Verifica e atualiza Ccoluna16 com base no mapeamento
-        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        if (contracheque.Ccoluna1 == "FUNDO MUN M.D.ED.V.P.ED-FUNDEB")
         {
-            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+            contracheque.Ccoluna21 = "2";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
         }
 
         switch (contracheque.Ccoluna16)
         {
-            case "11":
-            case "13":
             case "7":
+            case "2":
             case "17":
-            contracheque.Ccoluna18 = "833";
-                break;
-            case "10":
-                contracheque.Ccoluna18 = "128";
+            case "13":
+            case "5":       
+                contracheque.Ccoluna18 = "794";
                 break;
             default:
                 contracheque.Ccoluna18 = "ERRO";
                 break;
         }
+
 
         return Task.FromResult(new List<ContrachequeModel> { contracheque });
     }

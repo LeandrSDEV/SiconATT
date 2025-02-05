@@ -4,6 +4,8 @@
     {
         CUPIRA = 1,
         ABARE = 2,
-        CANSANCAO = 3
+        CANSANCAO = 3,
+        XIQUEXIQUE = 4,
+        ALCINOPÓLIS = 5,
     }
 }

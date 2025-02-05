@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using NPOI.HSSF.UserModel; // Para arquivos .xls
+using NPOI.HSSF.UserModel;
 using Servidor.Data;
 using Servidor.Models;
 using Servidor.Models.Enums;
@@ -11,20 +11,24 @@ namespace Servidor.Controllers
     public class ConvenioController : Controller
     {
         private readonly BancoContext _context;
-        private readonly AbareService _abareservice;
-        private readonly CupiraService _cupiraservice;
-        private readonly CansancaoService _cansancaoservice;
         private readonly MatriculaService _matriculaservice;
         private readonly SecretariaService _secretariaservice;
         private readonly ServidorService _servidorService;
         private readonly CategoriaService _categoriaService;
-        private readonly CleanupService _cleanupService;
+        private readonly CleanupService _cleanupService;        
+
+        private readonly AbareService _abareservice;
+        private readonly CupiraService _cupiraservice;
+        private readonly CansancaoService _cansancaoservice;
+        private readonly XiqueXiqueService _xiquexiqueservice;
+        private readonly AlcinopolisService _alcinopolisService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice, 
                                   MatriculaService matriculaservice, SecretariaService secretariaservice,
                                   ServidorService servidorService, CategoriaService categoriaService,
-                                  CleanupService cleanupService)
+                                  CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
+                                  AlcinopolisService alcinopolisService)
         {
             _context = context;
             _abareservice = abareservice;
@@ -35,6 +39,8 @@ namespace Servidor.Controllers
             _servidorService = servidorService;
             _categoriaService = categoriaService;
             _cleanupService = cleanupService;
+            _xiquexiqueservice = xiqueXiqueService;
+            _alcinopolisService = alcinopolisService;
         }
 
         public IActionResult Index()
@@ -65,32 +71,27 @@ namespace Servidor.Controllers
 
             try
             {
-                using (var reader = new StreamReader(arquivoTxt.OpenReadStream(), Encoding.UTF8))
+                var serviceMap = new Dictionary<Status, Func<string[], Task<List<ContrachequeModel>>>>
+{
+                    { Status.ABARE, colunas => _abareservice.ProcessarArquivoAsync(colunas, Status.ABARE) },
+                    { Status.CUPIRA, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.CUPIRA) },
+                    { Status.CANSANCAO, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.CANSANCAO) },
+                    { Status.XIQUEXIQUE, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.XIQUEXIQUE) },
+                    { Status.ALCINOPÓLIS, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.ALCINOPÓLIS) }
+};
+
+                if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
                 {
+                    using var reader = new StreamReader(arquivoTxt.OpenReadStream(), Encoding.UTF8);
                     while (!reader.EndOfStream)
                     {
-
                         var linha = await reader.ReadLineAsync();
                         if (string.IsNullOrWhiteSpace(linha) || !linha.StartsWith("F", StringComparison.OrdinalIgnoreCase))
                             continue;
 
                         var colunas = linha.Split(';').Select(c => c.Trim()).ToArray();
-
-                        if (status.StatusSelecionado == Status.ABARE)
-                        {
-                            var contracheques = await _abareservice.ProcessarArquivoAsync(colunas, Status.ABARE);
-                            registros.AddRange(contracheques);
-                        }
-                        if (status.StatusSelecionado == Status.CUPIRA)
-                        {
-                            var contracheques = await _cupiraservice.ProcessarArquivoAsync(colunas, Status.CUPIRA);
-                            registros.AddRange(contracheques);
-                        }
-                        if (status.StatusSelecionado == Status.CANSANCAO)
-                        {
-                            var contracheques = await _cansancaoservice.ProcessarArquivoAsync(colunas, Status.CANSANCAO);
-                            registros.AddRange(contracheques);
-                        }
+                        var contracheques = await processarArquivo(colunas);
+                        registros.AddRange(contracheques);
                     }
                 }
 
@@ -109,7 +110,7 @@ namespace Servidor.Controllers
             {
                 TempData["Mensagem"] = $"Erro ao processar o arquivo TXT: {ex.Message}";
             }
-
+//=====================================================================================================\\
             try
             {
                 using (var stream = arquivoExcel.OpenReadStream())
@@ -148,7 +149,8 @@ namespace Servidor.Controllers
                             { "Conselheiro Tutelar", "17"},
                             { "Estatutário", "10"},
                             { "Militar", "14"},
-                            { "Celetista", "9"}
+                            { "Celetista", "9"},
+                            { "Efetivo/Cedido", "15"}
                         };                      
 
                          //Atualiza Acoluna5 com base no mapeamento
@@ -178,10 +180,10 @@ namespace Servidor.Controllers
 
             await _matriculaservice.GerarMatriculasAsync();
             await _servidorService.GerarEncontradoAsync();
-            await _secretariaservice.GerarSecretariasAsync();
+            await _secretariaservice.GerarSecretariasAsync(status.StatusSelecionado);
             await _categoriaService.GerarVinculoAsync();
 
-            await _cleanupService.LimparTabelasAsync();
+            //await _cleanupService.LimparTabelasAsync();
 
             return RedirectToAction("Index");
         }
