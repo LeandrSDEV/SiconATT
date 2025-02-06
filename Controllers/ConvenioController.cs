@@ -126,7 +126,12 @@ namespace Servidor.Controllers
                         var administrativo = new AdministrativoModel
                         {
                             Acoluna1 = row.GetCell(2)?.ToString() ?? "",
-                            Acoluna2 = row.GetCell(3)?.ToString() ?? "", // Coluna 4
+
+                            // Lê apenas os 10 últimos dígitos ou preenche com zeros se for menor
+                            Acoluna2 = row.GetCell(3)?.ToString().Length >= 10
+                            ? row.GetCell(3).ToString().Substring(row.GetCell(3).ToString().Length - 10)
+                            : row.GetCell(3)?.ToString().PadLeft(10, '0') ?? "0000000000",
+
                             Acoluna3 = row.GetCell(4)?.ToString() ?? "", // Coluna 5
                             Acoluna4 = row.GetCell(12)?.ToString() ?? "", // Coluna 13
                             Acoluna5 = row.GetCell(13)?.ToString() ?? "", // Coluna 14

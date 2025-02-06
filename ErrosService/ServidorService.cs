@@ -1,5 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
+using System.IO;
+using System.Threading.Tasks;
 using Servidor.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 
 public class ServidorService
 {
@@ -13,44 +18,57 @@ public class ServidorService
     public async Task GerarEncontradoAsync()
     {
         // Carregar os dados das tabelas
-        var TabelaTxt = await _context.Contracheque.ToListAsync();
-        var TabelaExcel = await _context.Administrativo.ToListAsync();
+        var contracheques = await _context.Contracheque.ToListAsync();
+        var administrativos = await _context.Administrativo.ToListAsync();
 
-        // Normalizar os dados da tabela Administrativo (remover os zeros à esquerda de Acoluna1 e Acoluna2)
-        var administrativosNormalizados = TabelaExcel.Select(a => new
-        {
-            Acoluna1 = a.Acoluna1.TrimStart('0'), // Normalizando Acoluna1
-            Acoluna2 = a.Acoluna2.TrimStart('0')  // Normalizando Acoluna2
-        }).ToList();
-
-        // Comparar as tabelas e encontrar os itens de Contracheque que não existem na tabela Administrativo
-        var discrepancias = TabelaTxt
-            .Where(c =>
-                // Verifica se a combinação de Ccoluna2 e Ccoluna3 não está na tabela Administrativo
-                !administrativosNormalizados.Any(a =>
-                    c.Ccoluna2.TrimStart('0') == a.Acoluna1 &&
-                    c.Ccoluna3.TrimStart('0') == a.Acoluna2)) // Desconsiderando os zeros à esquerda
+        // Normalizar Acoluna1 removendo zeros à esquerda
+        var administrativosNormalizados = administrativos
+            .Select(a => a.Acoluna1.TrimStart('0'))
             .ToList();
 
-        // Verificar se há discrepâncias antes de gerar o arquivo
+        // Criar listas para facilitar contagem de ocorrências
+        var cColuna2List = contracheques
+            .Select(c => c.Ccoluna2.TrimStart('0').Trim())
+            .ToList();
+
+        var discrepancias = new List<string>();
+
+        // Identificar valores duplicados em Ccoluna2
+        var duplicatasCcoluna2 = cColuna2List
+            .GroupBy(c => c)
+            .Select(g => new { Valor = g.Key, QuantidadeC = g.Count() })
+            .ToList();
+
+        foreach (var duplicata in duplicatasCcoluna2)
+        {
+            int ocorrenciasEmAdministrativo = administrativosNormalizados.Count(a => a == duplicata.Valor);
+
+            if (duplicata.QuantidadeC > ocorrenciasEmAdministrativo)
+            {
+                // Quantidade extra que não tem correspondência em Acoluna1
+                int quantidadeExtra = duplicata.QuantidadeC - ocorrenciasEmAdministrativo;
+
+                // Adiciona exatamente a quantidade extra ao arquivo
+                var linhasExtras = contracheques
+                    .Where(c => c.Ccoluna2.TrimStart('0').Trim() == duplicata.Valor)
+                    .Take(quantidadeExtra)
+                    .Select(FormatarLinha);
+
+                discrepancias.AddRange(linhasExtras);
+            }
+        }
+
+        // Gerar arquivo se houver discrepâncias
         if (discrepancias.Any())
         {
-            // Gerar o arquivo TXT com as discrepâncias
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var filePath = Path.Combine(desktopPath, "SERVIDOR.txt");
 
-            // Agrupar discrepâncias por Ccoluna2 para tratar valores repetidos
-            var discrepanciasAgrupadas = discrepancias
-                .GroupBy(d => d.Ccoluna2)
-                .SelectMany(g => g);  // Agrupa todas as linhas de discrepância
-
-            // Usando StreamWriter assíncrono
             await using (var writer = new StreamWriter(filePath))
             {
-                foreach (var item in discrepanciasAgrupadas)
+                foreach (var linha in discrepancias)
                 {
-                    // Salvando as discrepâncias no arquivo
-                    await writer.WriteLineAsync($"{item.Ccoluna1};{item.Ccoluna2};{item.Ccoluna3};{item.Ccoluna4};{item.Ccoluna5};{item.Ccoluna6};{item.Ccoluna7};{item.Ccoluna8};{item.Ccoluna9};{item.Ccoluna10};{item.Ccoluna11};{item.Ccoluna12};{item.Ccoluna13};{item.Ccoluna14};{item.Ccoluna15};{item.Ccoluna16};{item.Ccoluna17};{item.Ccoluna18};{item.Ccoluna19};{item.Ccoluna20};{item.Ccoluna21};{item.Ccoluna22};{item.Ccoluna23};{item.Ccoluna24};{item.Ccoluna25}");
+                    await writer.WriteLineAsync(linha);
                 }
             }
 
@@ -60,5 +78,17 @@ public class ServidorService
         {
             Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não gerado.");
         }
+    }
+
+    private string FormatarLinha(dynamic c)
+    {
+        return string.Join(';', new[]
+        {
+            c.Ccoluna1, c.Ccoluna2, c.Ccoluna3, c.Ccoluna4, c.Ccoluna5,
+            c.Ccoluna6, c.Ccoluna7, c.Ccoluna8, c.Ccoluna9, c.Ccoluna10,
+            c.Ccoluna11, c.Ccoluna12, c.Ccoluna13, c.Ccoluna14, c.Ccoluna15,
+            c.Ccoluna16, c.Ccoluna17, c.Ccoluna18, c.Ccoluna19, c.Ccoluna20,
+            c.Ccoluna21, c.Ccoluna22, c.Ccoluna23, c.Ccoluna24, c.Ccoluna25
+        });
     }
 }
