@@ -22,13 +22,14 @@ namespace Servidor.Controllers
         private readonly CansancaoService _cansancaoservice;
         private readonly XiqueXiqueService _xiquexiqueservice;
         private readonly AlcinopolisService _alcinopolisService;
+        private readonly CafarnaumService _cafarnaumService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice, 
                                   MatriculaService matriculaservice, SecretariaService secretariaservice,
                                   ServidorService servidorService, CategoriaService categoriaService,
                                   CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
-                                  AlcinopolisService alcinopolisService)
+                                  AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService)
         {
             _context = context;
             _abareservice = abareservice;
@@ -41,6 +42,7 @@ namespace Servidor.Controllers
             _cleanupService = cleanupService;
             _xiquexiqueservice = xiqueXiqueService;
             _alcinopolisService = alcinopolisService;
+            _cafarnaumService = cafarnaumService;
         }
 
         public IActionResult Index()
@@ -77,7 +79,8 @@ namespace Servidor.Controllers
                     { Status.CUPIRA, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.CUPIRA) },
                     { Status.CANSANCAO, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.CANSANCAO) },
                     { Status.XIQUEXIQUE, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.XIQUEXIQUE) },
-                    { Status.ALCINOPÓLIS, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.ALCINOPÓLIS) }
+                    { Status.ALCINOPÓLIS, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.ALCINOPÓLIS) },
+                    { Status.CAFARNAUM, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.CAFARNAUM) }
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))

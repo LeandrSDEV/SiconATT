@@ -7,5 +7,6 @@
         CANSANCAO = 3,
         XIQUEXIQUE = 4,
         ALCINOPÓLIS = 5,
+        CAFARNAUM = 6,
     }
 }

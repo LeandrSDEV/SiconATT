@@ -14,6 +14,7 @@ builder.Services.AddScoped<CupiraService>();
 builder.Services.AddScoped<CansancaoService>();
 builder.Services.AddScoped<XiqueXiqueService>();
 builder.Services.AddScoped<AlcinopolisService>();
+builder.Services.AddScoped<CafarnaumService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();

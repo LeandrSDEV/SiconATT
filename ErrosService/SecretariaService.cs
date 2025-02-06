@@ -94,6 +94,9 @@ public class SecretariaService
             Status.ABARE =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA"),
 
+            Status.CAFARNAUM =>
+                (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA"),
+
             _ => false
         };
     }

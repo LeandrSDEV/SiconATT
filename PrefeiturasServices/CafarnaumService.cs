@@ -1,16 +1,16 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
 
-public class XiqueXiqueService
+public class CafarnaumService
 {
     private static readonly Dictionary<string, string> Vinculo = new()
     {
-        { "Estatutário", "10" },
-        { "Agente Político", "13" },
-        { "Cedidos", "33" },
-        { "Cargo em Comissão", "7" },
-        { "TRABALHADOR TEMPORÁRIO", "11" },
-        { "Conselho Tutelar", "17" }
+        { "Cargo em Comiss?o", "7" },
+        { "Estatut?rio", "10" },
+        { "Agente Pol?tico", "13" },
+        { "Pensionista", "1" },
+        { "Trabalhador Tempor?rio", "11" },
+        { "CONSELHO TUTELAR", "17" }
     };
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
@@ -25,7 +25,7 @@ public class XiqueXiqueService
             Ccoluna6 = "S/N",
             Ccoluna7 = "CASA",
             Ccoluna8 = "CENTRO",
-            Ccoluna9 = "XIQUEXIQUE",
+            Ccoluna9 = "CAFARNAUM",
             Ccoluna10 = "BA",
             Ccoluna11 = "99999999",
             Ccoluna12 = "0",
@@ -44,7 +44,7 @@ public class XiqueXiqueService
             Ccoluna25 = "0"
         };
 
-        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE XIQUE XIQUE")
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CAFARNAUM")
         {
             contracheque.Ccoluna21 = "1";
         }
@@ -56,13 +56,15 @@ public class XiqueXiqueService
 
         switch (contracheque.Ccoluna16)
         {
-            case "10":
-            case "13":
-            case "33":
             case "7":
-            case "11":
             case "17":
-                contracheque.Ccoluna18 = "265";
+            case "13":
+            case "11":          
+                contracheque.Ccoluna18 = "937";
+                break;
+            case "1":
+            case "10":
+                contracheque.Ccoluna18 = "936";
                 break;
             default:
                 contracheque.Ccoluna18 = "ERRO";
