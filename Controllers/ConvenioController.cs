@@ -75,12 +75,12 @@ namespace Servidor.Controllers
             {
                 var serviceMap = new Dictionary<Status, Func<string[], Task<List<ContrachequeModel>>>>
 {
-                    { Status.ABARE, colunas => _abareservice.ProcessarArquivoAsync(colunas, Status.ABARE) },
-                    { Status.CUPIRA, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.CUPIRA) },
-                    { Status.CANSANCAO, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.CANSANCAO) },
-                    { Status.XIQUEXIQUE, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.XIQUEXIQUE) },
-                    { Status.ALCINOPÓLIS, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.ALCINOPÓLIS) },
-                    { Status.CAFARNAUM, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.CAFARNAUM) }
+                    { Status.PREF_Abare_BA, colunas => _abareservice.ProcessarArquivoAsync(colunas, Status.PREF_Abare_BA) },
+                    { Status.PREF_Cupira_PE, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.PREF_Cupira_PE) },
+                    { Status.PREF_Cansanção_BA, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.PREF_Cansanção_BA) },
+                    { Status.PREF_XiqueXique_BA, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.PREF_XiqueXique_BA) },
+                    { Status.PREF_Aalcinópolis_BA, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Aalcinópolis_BA) },
+                    { Status.PREF_CAFARNAUM_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_CAFARNAUM_BA) }
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))

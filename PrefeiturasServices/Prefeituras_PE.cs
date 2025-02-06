@@ -1,16 +1,19 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
+//======================================    CUPIRA    ============================================\\
 
-public class XiqueXiqueService
+public class CupiraService
 {
     private static readonly Dictionary<string, string> Vinculo = new()
     {
-        { "Estatutário", "10" },
-        { "Agente Político", "13" },
-        { "Cedidos", "33" },
-        { "Cargo em Comissão", "7" },
-        { "TRABALHADOR TEMPORÁRIO", "11" },
-        { "Conselho Tutelar", "17" }
+        { "Cargo Comissionado", "7" },
+        { "Cargo Efetivo", "2" },
+        { "SERVIDOR EFETIVO CEDIDO DE OUTRA ENTIDADE", "33" },
+        { "EFETIVO CEDIDO LAGOA DOS GATOS", "33" },
+        { "ELETIVOS", "13" },
+        { "Contratados", "5" },
+        { "PENSIONISTA", "1" },
+        { "INATIVOS", "28" }
     };
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
@@ -25,8 +28,8 @@ public class XiqueXiqueService
             Ccoluna6 = "S/N",
             Ccoluna7 = "CASA",
             Ccoluna8 = "CENTRO",
-            Ccoluna9 = "XIQUEXIQUE",
-            Ccoluna10 = "BA",
+            Ccoluna9 = "CUPIRA",
+            Ccoluna10 = "PE",
             Ccoluna11 = "99999999",
             Ccoluna12 = "0",
             Ccoluna13 = "0",
@@ -44,7 +47,7 @@ public class XiqueXiqueService
             Ccoluna25 = "0"
         };
 
-        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE XIQUE XIQUE")
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CUPIRA")
         {
             contracheque.Ccoluna21 = "1";
         }
@@ -56,13 +59,16 @@ public class XiqueXiqueService
 
         switch (contracheque.Ccoluna16)
         {
-            case "10":
-            case "13":
-            case "33":
             case "7":
-            case "11":
-            case "17":
-                contracheque.Ccoluna18 = "265";
+            case "13":
+            case "5":
+            case "28":
+            case "1":
+                contracheque.Ccoluna18 = "943";
+                break;
+            case "33":
+            case "2":
+                contracheque.Ccoluna18 = "926";
                 break;
             default:
                 contracheque.Ccoluna18 = "ERRO";

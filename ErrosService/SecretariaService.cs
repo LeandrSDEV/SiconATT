@@ -80,21 +80,21 @@ public class SecretariaService
     {
         return statusSelecionado switch
         {
-            Status.CUPIRA =>
+            Status.PREF_Cupira_PE =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA") ||
                 (c.Ccoluna21.TrimStart('0') == "3" && acoluna4 != "EDUCAÇÃO"),
 
-            Status.ALCINOPÓLIS =>
+            Status.PREF_Aalcinópolis_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "MUNICÍPIO DE ALCINÓPOLIS/MS") ||
                 (c.Ccoluna21.TrimStart('0') == "2" && acoluna4 != "FUNDO MUNICIPAL DE EDUCAÇÃO"),
 
-            Status.CANSANCAO =>
+            Status.PREF_Cansanção_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA MUNICIPAL DE CANSANCAO"),
 
-            Status.ABARE =>
+            Status.PREF_Abare_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA"),
 
-            Status.CAFARNAUM =>
+            Status.PREF_CAFARNAUM_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA"),
 
             _ => false
