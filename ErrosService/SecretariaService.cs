@@ -94,8 +94,11 @@ public class SecretariaService
             Status.PREF_Abare_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA"),
 
-            Status.PREF_CAFARNAUM_BA =>
+            Status.PREF_Cafarnaum_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA"),
+
+            Status.PREF_Indiaporã_SP =>
+                (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "MUNICÍPIO DE INDIAPORÃ/SP "),
 
             _ => false
         };

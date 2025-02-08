@@ -28,14 +28,15 @@ public class CategoriaService
 
         // Filtrar as discrepâncias considerando que o Ccoluna2 deve existir na Acoluna5
         var discrepancias = TabelaTxt
-            .Where(c =>
-                administrativosNormalizados.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verificar se Ccoluna2 existe na Acoluna5
-                !administrativosNormalizados.Any(a =>
-                    a.Acoluna1 == c.Ccoluna2.TrimStart('0') && // Comparar Ccoluna2 com Acoluna1
-                    a.Acoluna5 == c.Ccoluna16.Trim() // Comparar Ccoluna16 com Acoluna5
-                )
-            )
-            .ToList();
+    .Where(c =>
+        administrativosNormalizados.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verifica se Ccoluna2 existe na Acoluna1
+        !administrativosNormalizados.Any(a =>
+            a.Acoluna1 == c.Ccoluna2.TrimStart('0') && // Comparação Acoluna1 <-> Ccoluna2
+            a.Acoluna5.Equals(c.Ccoluna16.Trim(), StringComparison.OrdinalIgnoreCase) // Comparação segura Acoluna5 <-> Ccoluna16
+        )
+    )
+    .ToList();
+
 
         // Verificar se há discrepâncias antes de gerar o arquivo
         if (discrepancias.Any())

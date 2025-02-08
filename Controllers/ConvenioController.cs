@@ -23,13 +23,15 @@ namespace Servidor.Controllers
         private readonly XiqueXiqueService _xiquexiqueservice;
         private readonly AlcinopolisService _alcinopolisService;
         private readonly CafarnaumService _cafarnaumService;
+        private readonly IndiaporaService _IndiaporaService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice, 
                                   MatriculaService matriculaservice, SecretariaService secretariaservice,
                                   ServidorService servidorService, CategoriaService categoriaService,
                                   CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
-                                  AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService)
+                                  AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService,
+                                  IndiaporaService indiaporaService)
         {
             _context = context;
             _abareservice = abareservice;
@@ -43,6 +45,7 @@ namespace Servidor.Controllers
             _xiquexiqueservice = xiqueXiqueService;
             _alcinopolisService = alcinopolisService;
             _cafarnaumService = cafarnaumService;
+            _IndiaporaService = indiaporaService;
         }
 
         public IActionResult Index()
@@ -80,7 +83,8 @@ namespace Servidor.Controllers
                     { Status.PREF_Cansanção_BA, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.PREF_Cansanção_BA) },
                     { Status.PREF_XiqueXique_BA, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.PREF_XiqueXique_BA) },
                     { Status.PREF_Aalcinópolis_BA, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Aalcinópolis_BA) },
-                    { Status.PREF_CAFARNAUM_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_CAFARNAUM_BA) }
+                    { Status.PREF_Cafarnaum_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_Cafarnaum_BA) },
+                    { Status.PREF_Indiaporã_SP, colunas => _IndiaporaService.ProcessarArquivoAsync(colunas, Status.PREF_Indiaporã_SP) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -158,7 +162,10 @@ namespace Servidor.Controllers
                             { "Estatutário", "10"},
                             { "Militar", "14"},
                             { "Celetista", "9"},
-                            { "Efetivo/Cedido", "15"}
+                            { "Efetivo/Cedido", "15"},
+                            { "Função Pública Relevante", "29"},
+                            { "Estagiario", "8"},
+                            { "Aposentado", "4"},
                         };                      
 
                          //Atualiza Acoluna5 com base no mapeamento
