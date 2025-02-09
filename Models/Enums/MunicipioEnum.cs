@@ -6,7 +6,7 @@
         PREF_Abare_BA = 2,
         PREF_Cansanção_BA = 3,
         PREF_XiqueXique_BA = 4,
-        PREF_Aalcinópolis_BA = 5, 
+        PREF_Alcinópolis_BA = 5, 
         PREF_Cafarnaum_BA = 6,
         FMS_Cupira_PE = 7,
         FMS_Monção_MA = 8,

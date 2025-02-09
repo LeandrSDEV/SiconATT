@@ -199,7 +199,7 @@ public class CansancaoService
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
     {
-        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "CANSANÇÃO");
+        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "CANSANCAO");
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CANSANCAO")
         {

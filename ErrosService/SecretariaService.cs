@@ -33,7 +33,7 @@ public class SecretariaService
             .Select(a => new
             {
                 Acoluna1 = a.Acoluna1.TrimStart('0'), // Remover zeros à esquerda de Acoluna1
-                Acoluna4 = a.Acoluna4.Trim()          // Normalizar Acoluna4
+                Acoluna4 = a.Acoluna4
             })
             .ToList();
 
@@ -84,7 +84,7 @@ public class SecretariaService
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "PREFEITURA") ||
                 (c.Ccoluna21.TrimStart('0') == "3" && acoluna4 != "EDUCAÇÃO"),
 
-            Status.PREF_Aalcinópolis_BA =>
+            Status.PREF_Alcinópolis_BA =>
                 (c.Ccoluna21.TrimStart('0') == "1" && acoluna4 != "MUNICÍPIO DE ALCINÓPOLIS/MS") ||
                 (c.Ccoluna21.TrimStart('0') == "2" && acoluna4 != "FUNDO MUNICIPAL DE EDUCAÇÃO"),
 
