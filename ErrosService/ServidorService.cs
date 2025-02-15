@@ -1,10 +1,5 @@
-﻿using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 
 public class ServidorService
 {
@@ -31,7 +26,7 @@ public class ServidorService
             .Select(c => c.Ccoluna2.TrimStart('0').Trim())
             .ToList();
 
-        var discrepancias = new List<string>();
+        var discrepancias = new List<dynamic>();
 
         // Identificar valores duplicados em Ccoluna2
         var duplicatasCcoluna2 = cColuna2List
@@ -48,19 +43,51 @@ public class ServidorService
                 // Quantidade extra que não tem correspondência em Acoluna1
                 int quantidadeExtra = duplicata.QuantidadeC - ocorrenciasEmAdministrativo;
 
-                // Adiciona exatamente a quantidade extra ao arquivo
+                // Adiciona exatamente a quantidade extra ao arquivo e ao banco
                 var linhasExtras = contracheques
                     .Where(c => c.Ccoluna2.TrimStart('0').Trim() == duplicata.Valor)
-                    .Take(quantidadeExtra)
-                    .Select(FormatarLinha);
+                    .Take(quantidadeExtra);
 
                 discrepancias.AddRange(linhasExtras);
+
+                // Adicionar as linhas extras diretamente no banco de dados
+                foreach (var linha in linhasExtras)
+                {
+                    var novaLinha = new Servidor.Models.AdministrativoModel
+                    {
+                        Acoluna1 = linha.Ccoluna2,
+                        Acoluna2 = linha.Ccoluna3,
+                        Acoluna3 = linha.Ccoluna4,
+                        Acoluna4 = linha.Ccoluna21,
+                        Acoluna5 = linha.Ccoluna16,
+                        Acoluna6 = linha.Ccoluna18
+                    };
+
+                    Console.WriteLine($"Adicionando ao banco: {novaLinha.Acoluna1}, {novaLinha.Acoluna2}, {novaLinha.Acoluna3}");
+                    _context.Administrativo.Add(novaLinha);
+                }
             }
         }
 
-        // Gerar arquivo se houver discrepâncias
+        // Salvar as discrepâncias no banco de dados
         if (discrepancias.Any())
         {
+            try
+            {
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Discrepâncias salvas no banco de dados com sucesso.");
+            }
+            catch (DbUpdateException dbEx)
+            {
+                Console.WriteLine($"Erro ao salvar no banco de dados: {dbEx.Message}");
+                Console.WriteLine($"Detalhes: {dbEx.InnerException?.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro inesperado: {ex.Message}");
+            }
+
+            // Gerar o arquivo SERVIDOR.txt
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var filePath = Path.Combine(desktopPath, "SERVIDOR.txt");
 
@@ -68,7 +95,7 @@ public class ServidorService
             {
                 foreach (var linha in discrepancias)
                 {
-                    await writer.WriteLineAsync(linha);
+                    await writer.WriteLineAsync(FormatarLinha(linha));
                 }
             }
 

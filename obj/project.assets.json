@@ -2670,11 +2670,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\LEANDRO\\source\\repos\\Servidor\\Servidor\\Servidor.csproj",
+      "projectUniqueName": "C:\\Users\\LEANDRO\\source\\repos\\SiconATT\\Servidor.csproj",
       "projectName": "Servidor",
-      "projectPath": "C:\\Users\\LEANDRO\\source\\repos\\Servidor\\Servidor\\Servidor.csproj",
+      "projectPath": "C:\\Users\\LEANDRO\\source\\repos\\SiconATT\\Servidor.csproj",
       "packagesPath": "C:\\Users\\LEANDRO\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\LEANDRO\\source\\repos\\Servidor\\Servidor\\obj\\",
+      "outputPath": "C:\\Users\\LEANDRO\\source\\repos\\SiconATT\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

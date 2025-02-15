@@ -1,7 +1,7 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
 
-public class ContrachequeHelper
+public class ContrachequeBA
 {
     public static ContrachequeModel CriarContracheque(string[] colunas, string municipio)
     {
@@ -52,7 +52,7 @@ public class AbareService
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
     {
-        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "ABARE");
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "ABARE");
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE ABARE")
         {
@@ -102,7 +102,7 @@ public class XiqueXiqueService
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
     {
-        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "XIQUEXIQUE");
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "XIQUEXIQUE");
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE XIQUE XIQUE")
         {
@@ -150,7 +150,7 @@ public class CafarnaumService
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
     {
-        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "CAFARNAUM");
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "CAFARNAUM");
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CAFARNAUM")
         {
@@ -199,7 +199,7 @@ public class CansancaoService
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
     {
-        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "CANSANCAO");
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "CANSANCAO");
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CANSANCAO")
         {

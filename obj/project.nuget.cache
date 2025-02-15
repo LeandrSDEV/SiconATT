@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LxgLuNYnx+I=",
+  "dgSpecHash": "OsCOWOFFOKs=",
   "success": true,
-  "projectFilePath": "C:\\Users\\LEANDRO\\source\\repos\\Servidor\\Servidor\\Servidor.csproj",
+  "projectFilePath": "C:\\Users\\LEANDRO\\source\\repos\\SiconATT\\Servidor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\LEANDRO\\.nuget\\packages\\bouncycastle.cryptography\\2.3.1\\bouncycastle.cryptography.2.3.1.nupkg.sha512",
     "C:\\Users\\LEANDRO\\.nuget\\packages\\enums.net\\4.0.1\\enums.net.4.0.1.nupkg.sha512",

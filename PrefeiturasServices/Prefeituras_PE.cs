@@ -1,5 +1,40 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
+
+public class ContrachequePE
+{
+    public static ContrachequeModel CriarContracheque(string[] colunas, string municipio)
+    {
+        return new ContrachequeModel
+        {
+            Ccoluna1 = colunas[7],
+            Ccoluna2 = colunas[3],
+            Ccoluna3 = colunas[4],
+            Ccoluna4 = colunas[5],
+            Ccoluna5 = "Rua A",
+            Ccoluna6 = "S/N",
+            Ccoluna7 = "CASA",
+            Ccoluna8 = "CENTRO",
+            Ccoluna9 = municipio,
+            Ccoluna10 = "PE",
+            Ccoluna11 = "99999999",
+            Ccoluna12 = "0",
+            Ccoluna13 = "0",
+            Ccoluna14 = "99999999999",
+            Ccoluna15 = colunas[9],
+            Ccoluna16 = colunas[16],
+            Ccoluna17 = "0",
+            Ccoluna18 = colunas[18],
+            Ccoluna19 = "0",
+            Ccoluna20 = "Teste@gmail.com",
+            Ccoluna21 = colunas[19],
+            Ccoluna22 = "0",
+            Ccoluna23 = colunas[10],
+            Ccoluna24 = "0",
+            Ccoluna25 = "0"
+        };
+    }
+}
 //======================================    CUPIRA    ============================================\\
 
 public class CupiraService
@@ -18,7 +53,7 @@ public class CupiraService
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
     {
-        var contracheque = ContrachequeHelper.CriarContracheque(colunas, "CUPIRA");
+        var contracheque = ContrachequePE.CriarContracheque(colunas, "CUPIRA");
 
         if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CUPIRA")
         {

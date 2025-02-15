@@ -21,22 +21,22 @@ public class CategoriaService
         var administrativosNormalizados = TabelaExcel
             .Select(a => new
             {
-                Acoluna1 = a.Acoluna1.TrimStart('0'), // Remover zeros à esquerda de Acoluna1
-                Acoluna5 = a.Acoluna5.Trim() // Normalizar Acoluna5
+                Acoluna1 = a.Acoluna1, 
+                Acoluna5 = a.Acoluna5,
+                AcolunaId = a.Id // ID para identificar cada linha
             })
             .ToList();
 
-        // Filtrar as discrepâncias considerando que o Ccoluna2 deve existir na Acoluna5
+        // Filtrar as discrepâncias considerando que o Ccoluna2 deve existir na Acoluna1
         var discrepancias = TabelaTxt
-    .Where(c =>
-        administrativosNormalizados.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verifica se Ccoluna2 existe na Acoluna1
-        !administrativosNormalizados.Any(a =>
-            a.Acoluna1 == c.Ccoluna2.TrimStart('0') && // Comparação Acoluna1 <-> Ccoluna2
-            a.Acoluna5.Equals(c.Ccoluna16.Trim(), StringComparison.OrdinalIgnoreCase) // Comparação segura Acoluna5 <-> Ccoluna16
-        )
-    )
-    .ToList();
-
+            .Where(c =>
+                administrativosNormalizados.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verifica se Ccoluna2 existe na Acoluna1
+                !administrativosNormalizados.Any(a =>
+                    a.Acoluna1 == c.Ccoluna2 && // Comparação Acoluna1 <-> Ccoluna2
+                    a.Acoluna5.Equals(c.Ccoluna16, StringComparison.OrdinalIgnoreCase) // Comparação segura Acoluna5 <-> Ccoluna16
+                )
+            )
+            .ToList();
 
         // Verificar se há discrepâncias antes de gerar o arquivo
         if (discrepancias.Any())
@@ -59,8 +59,29 @@ public class CategoriaService
                     {
                         // Escrever cada linha com valores únicos de Ccoluna3
                         await writer.WriteLineAsync($"{item.Ccoluna2};{item.Ccoluna3};{item.Ccoluna16}");
+
+                        // Atualizar o valor de Acoluna5 no banco de dados
+                        var administrativo = administrativosNormalizados
+                            .FirstOrDefault(a => a.Acoluna1 == item.Ccoluna2);
+
+                        if (administrativo != null)
+                        {
+                            // Encontrar o item correspondente na tabela Administrativo
+                            var itemParaAtualizar = await _context.Administrativo
+                                .FirstOrDefaultAsync(a => a.Id == administrativo.AcolunaId);
+
+                            if (itemParaAtualizar != null)
+                            {
+                                // Atualizar Acoluna5 com o valor de Ccoluna16
+                                itemParaAtualizar.Acoluna5 = item.Ccoluna16.Trim();
+                                _context.Administrativo.Update(itemParaAtualizar);
+                            }
+                        }
                     }
                 }
+
+                // Salvar as alterações no banco de dados
+                await _context.SaveChangesAsync();
             }
 
             Console.WriteLine($"Arquivo salvo em: {filePath}");

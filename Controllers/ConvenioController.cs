@@ -143,6 +143,7 @@ namespace Servidor.Controllers
                             Acoluna4 = row.GetCell(12)?.ToString() ?? "", // Coluna 13
                             Acoluna5 = row.GetCell(13)?.ToString() ?? "", // Coluna 14
                             Acoluna6 = row.GetCell(14)?.ToString() ?? "", // Coluna 15
+                            
                         };
 
                          //Mapeamento de valores para Acoluna5
@@ -193,12 +194,19 @@ namespace Servidor.Controllers
                 TempData["Mensagem"] = $"Erro ao processar o arquivo Excel: {ex.Message}";
             }
 
-            await _matriculaservice.GerarMatriculasAsync();
             await _servidorService.GerarEncontradoAsync();
-            await _secretariaservice.GerarSecretariasAsync(status.StatusSelecionado);
+
+            await _matriculaservice.GerarMatriculasAsync();
+
             await _categoriaService.GerarVinculoAsync();
 
-            //await _cleanupService.LimparTabelasAsync();
+            await _secretariaservice.GerarSecretariasAsync(status.StatusSelecionado);
+
+            //Perfil de cálculo (Geral)
+
+            //Perfil de Acesso (Limitado)
+
+            await _cleanupService.LimparTabelasAsync();
 
             return RedirectToAction("Index");
         }
