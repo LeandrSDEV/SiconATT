@@ -15,60 +15,43 @@ public class MatriculaService
 
     public async Task GerarMatriculasAsync()
     {
+        // Carregar os dados das tabelas
         var TabelaTxt = await _context.Contracheque.ToListAsync();
         var TabelaExcel = await _context.Administrativo.ToListAsync();
 
+        // Normalizar as tabelas para facilitar as comparações
         var administrativosNormalizados = TabelaExcel.Select(a => new
         {
-            Acoluna1 = a.Acoluna1,
-            Acoluna2 = a.Acoluna2,
-            Entidade = a
+            Acoluna1 = a.Acoluna1.TrimStart('0'), // Remover zeros à esquerda
+            Acoluna2 = a.Acoluna2.TrimStart('0'),
+            Entidade = a // Referência à entidade para atualizações
         }).ToList();
 
-        // Filtrar as discrepâncias, agora garantindo que não gere se Ccoluna3 == Acoluna2
-        var discrepancias = TabelaTxt
-            .Where(c => !administrativosNormalizados.Any(a =>
-                c.Ccoluna2 == a.Acoluna1 &&
-                c.Ccoluna3 == a.Acoluna2) &&
-                c.Ccoluna3 != c.Ccoluna2) // Garantir que Ccoluna3 e Ccoluna2 não sejam iguais
-            .ToList();
+        // Preparar um dicionário de correspondência entre os itens processados
+        var correspondencias = new List<(string Ccoluna2, string Acoluna2, string Ccoluna3)>();
 
-        // Verificar se existe alguma discrepância antes de continuar
-        if (!discrepancias.Any())
-        {
-            Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não foi gerado.");
-            return;
-        }
-
-        // Atualizar os valores da tabela Administrativo com base nas discrepâncias
-        foreach (var item in discrepancias)
+        // Percorrer Contracheque para encontrar correspondências únicas com Administrativo
+        foreach (var c in TabelaTxt)
         {
             var administrativoParaAtualizar = administrativosNormalizados
-                .FirstOrDefault(a => a.Acoluna1 == item.Ccoluna2);
+                .FirstOrDefault(a => a.Acoluna1 == c.Ccoluna2.TrimStart('0') && // CPF igual
+                                      a.Acoluna2 != c.Ccoluna3.TrimStart('0') && // Matrícula diferente
+                                      !correspondencias.Any(x => x.Acoluna2 == a.Acoluna2)); // Garantir que ainda não foi usado
 
             if (administrativoParaAtualizar != null)
             {
-                // Atualiza os valores da entidade
-                administrativoParaAtualizar.Entidade.Acoluna2 = item.Ccoluna3; // Atualiza a matrícula
+                correspondencias.Add((
+                    Ccoluna2: c.Ccoluna2.TrimStart('0'),
+                    Acoluna2: administrativoParaAtualizar.Acoluna2,
+                    Ccoluna3: c.Ccoluna3.TrimStart('0')
+                ));
             }
         }
 
-        // Salvar alterações no banco de dados
-        await _context.SaveChangesAsync();
-        Console.WriteLine("Tabela Administrativo atualizada com sucesso.");
-
-        // Verificar se existem discrepâncias válidas para gerar o arquivo
-        var discrepanciasValidas = discrepancias
-            .Where(item =>
-                administrativosNormalizados
-                    .Any(a => a.Acoluna1 == item.Ccoluna2) &&
-                item.Ccoluna3 != item.Ccoluna2) // Garantir que Ccoluna3 não seja igual a Ccoluna2
-            .ToList();
-
-        // Se não houver discrepâncias válidas, não gera o arquivo
-        if (!discrepanciasValidas.Any())
+        // Se não houver discrepâncias, encerrar a execução
+        if (!correspondencias.Any())
         {
-            Console.WriteLine("Nenhuma discrepância válida encontrada. Arquivo não foi gerado.");
+            Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não foi gerado.");
             return;
         }
 
@@ -76,33 +59,39 @@ public class MatriculaService
         var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
         var filePath = Path.Combine(desktopPath, "MATRICULA.txt");
 
-        // Usando StreamWriter assíncrono para escrever no arquivo
         await using (var writer = new StreamWriter(filePath))
         {
-            foreach (var item in discrepanciasValidas)
+            foreach (var discrepancia in correspondencias)
             {
-                var aColuna2Discrepancia = administrativosNormalizados
-                    .FirstOrDefault(a => a.Acoluna1 == item.Ccoluna2)
-                    ?.Entidade.Acoluna2;
-
-                // Verificar se a discrepância não é gerada quando Ccoluna3 == Acoluna2
-                if (aColuna2Discrepancia != null && item.Ccoluna3 != aColuna2Discrepancia)
-                {
-                    await writer.WriteLineAsync($"{item.Ccoluna2};{aColuna2Discrepancia};{item.Ccoluna3}");
-                }
+                await writer.WriteLineAsync($"{discrepancia.Ccoluna2};{discrepancia.Acoluna2};{discrepancia.Ccoluna3}");
             }
         }
 
-        // Verificar se o arquivo foi criado e tem conteúdo
+        // Verificar se o arquivo foi gerado corretamente
         if (new FileInfo(filePath).Length == 0)
         {
-            // Se o arquivo estiver vazio, excluir o arquivo
-            File.Delete(filePath);
-            Console.WriteLine("Arquivo gerado vazio, e foi excluído.");
+            File.Delete(filePath); // Excluir o arquivo vazio
+            Console.WriteLine("Arquivo vazio detectado e excluído.");
+            return;
         }
-        else
+
+        Console.WriteLine($"Arquivo salvo em: {filePath}");
+
+        // Atualizar os valores no banco de dados com as correspondências
+        foreach (var correspondencia in correspondencias)
         {
-            Console.WriteLine($"Arquivo salvo em: {filePath}");
+            var administrativoParaAtualizar = TabelaExcel.FirstOrDefault(a =>
+                a.Acoluna1.TrimStart('0') == correspondencia.Ccoluna2 &&
+                a.Acoluna2.TrimStart('0') == correspondencia.Acoluna2);
+
+            if (administrativoParaAtualizar != null)
+            {
+                administrativoParaAtualizar.Acoluna2 = correspondencia.Ccoluna3; // Atualiza a matrícula
+            }
         }
+
+        // Salvar alterações no banco
+        await _context.SaveChangesAsync();
+        Console.WriteLine("Tabela Administrativo atualizada com sucesso.");
     }
 }

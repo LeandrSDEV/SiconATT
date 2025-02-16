@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using NPOI.HSSF.UserModel;
 using Servidor.Data;
+using Servidor.ErrosService;
 using Servidor.Models;
 using Servidor.Models.Enums;
 
@@ -15,6 +16,8 @@ namespace Servidor.Controllers
         private readonly SecretariaService _secretariaservice;
         private readonly ServidorService _servidorService;
         private readonly CategoriaService _categoriaService;
+        private readonly GeradorDePerfil _geradorDePerfil;
+        private readonly PerfilCalculo _perfilCalculo;
         private readonly CleanupService _cleanupService;        
 
         private readonly AbareService _abareservice;
@@ -24,6 +27,7 @@ namespace Servidor.Controllers
         private readonly AlcinopolisService _alcinopolisService;
         private readonly CafarnaumService _cafarnaumService;
         private readonly IndiaporaService _IndiaporaService;
+        private readonly AnadiaService _anadiaService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice, 
@@ -31,21 +35,25 @@ namespace Servidor.Controllers
                                   ServidorService servidorService, CategoriaService categoriaService,
                                   CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
                                   AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService,
-                                  IndiaporaService indiaporaService)
+                                  IndiaporaService indiaporaService, GeradorDePerfil geradorDePerfil,
+                                  AnadiaService anadiaService, PerfilCalculo perfilCalculo)
         {
             _context = context;
-            _abareservice = abareservice;
-            _cupiraservice = cupiraservice;
-            _cansancaoservice = cansancaoservice;
-            _matriculaservice = matriculaservice;
-            _secretariaservice = secretariaservice;
             _servidorService = servidorService;
+            _matriculaservice = matriculaservice;
             _categoriaService = categoriaService;
+            _secretariaservice = secretariaservice;
+            _geradorDePerfil = geradorDePerfil;
+            _perfilCalculo = perfilCalculo;
             _cleanupService = cleanupService;
             _xiquexiqueservice = xiqueXiqueService;
             _alcinopolisService = alcinopolisService;
             _cafarnaumService = cafarnaumService;
             _IndiaporaService = indiaporaService;
+            _abareservice = abareservice;
+            _cansancaoservice = cansancaoservice;
+            _cupiraservice = cupiraservice;
+            _anadiaService = anadiaService;
         }
 
         public IActionResult Index()
@@ -85,6 +93,7 @@ namespace Servidor.Controllers
                     { Status.PREF_Alcinópolis_BA, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Alcinópolis_BA) },
                     { Status.PREF_Cafarnaum_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_Cafarnaum_BA) },
                     { Status.PREF_Indiaporã_SP, colunas => _IndiaporaService.ProcessarArquivoAsync(colunas, Status.PREF_Indiaporã_SP) },
+                    { Status.PREF_Anadia_AL, colunas => _anadiaService.ProcessarArquivoAsync(colunas, Status.PREF_Anadia_AL) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -202,11 +211,11 @@ namespace Servidor.Controllers
 
             await _secretariaservice.GerarSecretariasAsync(status.StatusSelecionado);
 
-            //Perfil de cálculo (Geral)
+            await _geradorDePerfil.GerarPerfilAcessoAsync(status.StatusSelecionado);  //Perfil de Acesso (Limitado)
 
-            //Perfil de Acesso (Limitado)
+            await _perfilCalculo.GeradorPerfilCalculo(status.StatusSelecionado);
 
-            await _cleanupService.LimparTabelasAsync();
+            //await _cleanupService.LimparTabelasAsync();
 
             return RedirectToAction("Index");
         }

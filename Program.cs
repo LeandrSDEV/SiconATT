@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
+using Servidor.ErrosService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +17,14 @@ builder.Services.AddScoped<XiqueXiqueService>();
 builder.Services.AddScoped<AlcinopolisService>();
 builder.Services.AddScoped<CafarnaumService>();
 builder.Services.AddScoped<IndiaporaService>();
+builder.Services.AddScoped<AnadiaService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();
 builder.Services.AddScoped<ServidorService>();
 builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<GeradorDePerfil>();
+builder.Services.AddScoped<PerfilCalculo>();
 
 builder.Services.AddScoped<CleanupService>();
 

@@ -1,7 +1,9 @@
 ﻿using Servidor.Models.Enums;
 using Servidor.Models;
+using Microsoft.EntityFrameworkCore;
+using Servidor.Data;
 
-public class ContrachequeSP
+public class ContrachequeAL
 {
     public static ContrachequeModel CriarContracheque(string[] colunas, string municipio)
     {
@@ -16,7 +18,7 @@ public class ContrachequeSP
             Ccoluna7 = "CASA",
             Ccoluna8 = "CENTRO",
             Ccoluna9 = municipio,
-            Ccoluna10 = "MS",
+            Ccoluna10 = "AL",
             Ccoluna11 = "99999999",
             Ccoluna12 = "0",
             Ccoluna13 = "0",
@@ -35,27 +37,30 @@ public class ContrachequeSP
         };
     }
 }
-//======================================    INDIAPORÃ    ============================================\\
+//======================================    ANADIA    ============================================\\
 
-public class IndiaporaService
+public class AnadiaService
 {
     private static readonly Dictionary<string, string> Vinculo = new()
     {
-        { "Diretor sem v?nculo empregat?cio para o qual a empresa/entidade tenha optado por recolhimento do FGTS.", "29" },
-        { "Servidor regido pelo Regime Jur?dico ?nico ( Federal,Estadual e Municipal) e militar", "2" },
-        { "Servidor P?blico n?o-efetivo (demiss?vel ad nutum ou admitido por legisla??o especial, n?o regido pela CLT ).", "5" },
-        { "ESTAGIARIOS", "8" },
-        { "Tempor?rios", "11" },
-        { "CONSELHEIROS TUTELARES", "17" }
+        { "Contratado", "5" },
+        { "Efetivo", "2" },
+        { "Comissionado", "7" },
+        { "Eletivo", "13" }
     };
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
-    {       
-        var contracheque = ContrachequeSP.CriarContracheque(colunas, "INDIAPORA");
+    {
+        var contracheque = ContrachequeAL.CriarContracheque(colunas, "ANADIA");
 
-        if (contracheque.Ccoluna1 == "MUNICIPIO DE INDIAPORA")
+        if (contracheque.Ccoluna1 == "FUNDO MUNICIPAL DE SAUDE")
         {
-            contracheque.Ccoluna21 = "1";
+            contracheque.Ccoluna21 = "351";
+        }
+
+        if (contracheque.Ccoluna1 == "FUNDO MUNICIPAL DE EDUCACAO" || contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE ANADIA" || contracheque.Ccoluna1 == "FUNDO MUN DE ASSISTENCIA SOCIAL")
+        {
+            contracheque.Ccoluna21 = "300";
         }
 
         if (Vinculo.ContainsKey(colunas[16].Trim()))
@@ -65,14 +70,14 @@ public class IndiaporaService
 
         switch (contracheque.Ccoluna16)
         {
-            case "29":
-            case "8":
+            case "7":
+            case "13":
             case "5":
+                contracheque.Ccoluna18 = "329";
+                break;
             case "2":
-            case "11":
-            case "17":
-                contracheque.Ccoluna18 = "294";
-                break;          
+                contracheque.Ccoluna18 = "171";
+                break;
             default:
                 contracheque.Ccoluna18 = "ERRO";
                 break;
@@ -81,4 +86,7 @@ public class IndiaporaService
 
         return Task.FromResult(new List<ContrachequeModel> { contracheque });
     }
+    
 }
+
+

@@ -123,6 +123,10 @@ public class SecretariaService
             Status.PREF_Indiaporã_SP =>
                 (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE INDIAPORÃ/SP "),
 
+            Status.PREF_Anadia_AL =>
+                (c.Ccoluna21 == "300" && acoluna4 != "PREFEITURA MUNICIPAL DE ANADIA" && acoluna4 != "300") ||
+                (c.Ccoluna21 == "351" && acoluna4 != "FUNDO MUNICIPAL DE SAUDE DE ANADIA" && acoluna4 != "351"),
+
             _ => false
         };
     }
